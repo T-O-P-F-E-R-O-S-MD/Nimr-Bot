@@ -8,6 +8,7 @@ const {
 
 const Pino = require("pino");
 const config = require("../config/config");
+const { createOrUpdateUser } = require("../controllers/userController");
 
 let sock = null;
 let qrCode = null;
@@ -21,48 +22,38 @@ async function connectBot() {
         await fetchLatestBaileysVersion();
 
     sock = makeWASocket({
-
         version,
-
         auth: state,
-
         browser: Browsers.windows(config.BOT_NAME),
-
-        logger: Pino({
-            level: "silent"
-        }),
-
+        logger: Pino({ level: "silent" }),
         printQRInTerminal: false,
-
-        markOnlineOnConnect: true,
-
-        syncFullHistory: false,
-
-        generateHighQualityLinkPreview: true
-
+        markOnlineOnConnect: true
     });
 
     sock.ev.on("creds.update", saveCreds);
 
     sock.ev.on("connection.update", async (update) => {
 
-        const {
-            connection,
-            qr,
-            lastDisconnect
-        } = update;
+        const { connection, qr, lastDisconnect } = update;
 
         if (qr) {
-
             qrCode = qr;
-
             console.log("📱 QR Code Generated");
-
         }
 
         if (connection === "open") {
 
             console.log(`✅ ${config.BOT_NAME} Connected`);
+
+            const me = sock.user;
+
+            if (me) {
+                await createOrUpdateUser({
+                    jid: me.id,
+                    name: me.name || "Unknown",
+                    number: me.id.split(":")[0]
+                });
+            }
 
         }
 
@@ -73,15 +64,8 @@ async function connectBot() {
                 DisconnectReason.loggedOut;
 
             if (reconnect) {
-
                 console.log("♻️ Reconnecting...");
-
                 connectBot();
-
-            } else {
-
-                console.log("❌ Logged Out");
-
             }
 
         }
@@ -89,15 +73,10 @@ async function connectBot() {
     });
 
     return sock;
-
 }
 
 module.exports = {
-
     connectBot,
-
     getSocket: () => sock,
-
     getQR: () => qrCode
-
 };
