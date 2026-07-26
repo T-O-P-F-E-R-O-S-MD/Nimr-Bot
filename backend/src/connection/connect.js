@@ -9,6 +9,7 @@ const {
 const Pino = require("pino");
 const config = require("../config/config");
 const { createOrUpdateUser } = require("../controllers/userController");
+const messageHandler = require("../handlers/messageHandler");
 
 let sock = null;
 let qrCode = null;
@@ -31,6 +32,11 @@ async function connectBot() {
     });
 
     sock.ev.on("creds.update", saveCreds);
+
+    // Message Event
+    sock.ev.on("messages.upsert", async (message) => {
+        await messageHandler(sock, message);
+    });
 
     sock.ev.on("connection.update", async (update) => {
 
