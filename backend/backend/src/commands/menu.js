@@ -26,8 +26,8 @@ module.exports = {
 👋 Hello ${sender}
 
 ⚡ Prefix : ${prefix}
-🤖 Version : 1.0.0
-👑 Developer : TOPFEROS TECH
+🤖 Version : ${config.VERSION}
+👑 Developer : ${config.OWNER_NAME}
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -103,15 +103,18 @@ ${prefix}unblock
 ━━━━━━━━━━━━━━━━━━━━━━━
 
 🌐 Dashboard
-https://topferosmdconnect.com
+${config.WEBSITE}
 
-Powered by TOPFEROS TECH
+Powered by ${config.OWNER_NAME}
 `;
 
         await sock.sendMessage(
             msg.key.remoteJid,
             {
-                text: menu
+                image: {
+                    url: config.BOT_IMAGE
+                },
+                caption: menu
             },
             {
                 quoted: msg
