@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+
+# Session
+session/
+auth_info/
+creds.json
+
+# Environment
+.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Temp
+temp/
+tmp/
+
+# Database
+database/*.json
+database/*.db
+database/*.sqlite
+
+# Operating System
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Render
+.render
+
+# Cache
+.cache/
+
+# Build
+dist/
+build/
+
+# Package Locks
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
