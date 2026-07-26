@@ -15,6 +15,8 @@ const chalk = require("chalk");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
+const api = require("./src/routes/api");
+
 const app = express();
 const server = http.createServer(app);
 
@@ -31,6 +33,8 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use("/api", api);
 
 // Static Files
 app.use(express.static("public"));
