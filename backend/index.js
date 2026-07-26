@@ -17,6 +17,7 @@ const cors = require("cors");
 
 const api = require("./src/routes/api");
 const { connectBot } = require("./src/connection/connect");
+const { loadPlugins } = require("./src/utils/pluginLoader");
 
 const app = express();
 const server = http.createServer(app);
@@ -86,6 +87,7 @@ server.listen(PORT, async () => {
 ╠════════════════════════════════════╣
 ║ 🚀 Backend Started Successfully   ║
 ║ 🌐 Dashboard Ready                ║
+║ 🔌 Loading Plugins...             ║
 ║ 🤖 Starting WhatsApp...           ║
 ╚════════════════════════════════════╝
 `));
@@ -94,13 +96,17 @@ server.listen(PORT, async () => {
 
     try {
 
+        // Load all plugins
+        loadPlugins();
+
+        // Connect WhatsApp
         await connectBot();
 
-        console.log(chalk.green("✅ WhatsApp Connected Successfully"));
+        console.log(chalk.green("✅ TOPFEROS MD Started Successfully"));
 
     } catch (err) {
 
-        console.log(chalk.red("❌ Failed To Connect WhatsApp"));
+        console.log(chalk.red("❌ Failed To Start TOPFEROS MD"));
         console.error(err);
 
     }
