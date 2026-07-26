@@ -16,13 +16,14 @@ async function messageHandler(sock, message) {
 
         try {
 
-            if (typeof plugin.run === "function") {
-                await plugin.run(sock, msg);
+            if (typeof plugin.execute === "function") {
+                await plugin.execute(sock, msg);
             }
 
         } catch (err) {
 
-            console.error(`Plugin Error: ${plugin.name}`, err);
+            console.error(`❌ ${plugin.name || "Unknown Plugin"} Error`);
+            console.error(err);
 
         }
 
