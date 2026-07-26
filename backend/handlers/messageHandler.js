@@ -1,31 +1,100 @@
+/**
+ * ============================================
+ * TOPFEROS MD - MESSAGE HANDLER
+ * Developer: TOPFEROS TECH
+ * ============================================
+ */
+
 const { getPlugins } = require("../utils/pluginLoader");
+const config = require("../config/config");
 
 async function messageHandler(sock, message) {
 
-    if (!message.messages) return;
+    try {
 
-    const msg = message.messages[0];
+        if (!message?.messages?.length) return;
 
-    if (!msg.message) return;
+        const msg = message.messages[0];
 
-    if (msg.key.fromMe) return;
+        if (!msg || !msg.message) return;
 
-    const plugins = getPlugins();
+        if (msg.key?.fromMe) return;
 
-    for (const plugin of plugins) {
+        // ===================================
+        // Ignore Broadcast / Status
+        // ===================================
 
-        try {
+        if (
+            msg.key.remoteJid === "status@broadcast" &&
+            !config.FEATURES.AUTO_STATUS_REPLY
+        ) {
+            return;
+        }
 
-            if (typeof plugin.execute === "function") {
-                await plugin.execute(sock, msg);
+        // ===================================
+        // Auto Read
+        // ===================================
+
+        if (config.FEATURES.AUTO_READ) {
+
+            try {
+                await sock.readMessages([msg.key]);
+            } catch (err) {
+                console.error("Auto Read Error:", err.message);
             }
 
-        } catch (err) {
+        }
 
-            console.error(`❌ ${plugin.name || "Unknown Plugin"} Error`);
-            console.error(err);
+        // ===================================
+        // Auto View Once (Coming Soon)
+        // ===================================
+
+        const quoted =
+            msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+
+        if (quoted) {
+
+            if (
+                quoted.viewOnceMessage ||
+                quoted.viewOnceMessageV2 ||
+                quoted.viewOnceMessageV2Extension
+            ) {
+
+                // Auto View Once Logic
+
+            }
 
         }
+
+        // ===================================
+        // Execute Commands
+        // ===================================
+
+        const plugins = getPlugins();
+
+        for (const plugin of plugins) {
+
+            try {
+
+                if (typeof plugin.execute === "function") {
+                    await plugin.execute(sock, msg);
+                }
+
+            } catch (err) {
+
+                console.error(
+                    `❌ ${plugin.name || "Unknown Plugin"} Error`
+                );
+
+                console.error(err);
+
+            }
+
+        }
+
+    } catch (err) {
+
+        console.error("Message Handler Error:", err);
 
     }
 
