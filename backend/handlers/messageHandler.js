@@ -1,5 +1,4 @@
-const fs = require("fs");
-const path = require("path");
+const { getPlugins } = require("../utils/pluginLoader");
 
 async function messageHandler(sock, message) {
 
@@ -11,20 +10,11 @@ async function messageHandler(sock, message) {
 
     if (msg.key.fromMe) return;
 
-    const pluginsPath = path.join(__dirname, "../plugins");
+    const plugins = getPlugins();
 
-    if (!fs.existsSync(pluginsPath)) return;
-
-    const plugins = fs.readdirSync(pluginsPath)
-        .filter(file => file.endsWith(".js"));
-
-    for (const file of plugins) {
+    for (const plugin of plugins) {
 
         try {
-
-            delete require.cache[require.resolve(path.join(pluginsPath, file))];
-
-            const plugin = require(path.join(pluginsPath, file));
 
             if (typeof plugin.run === "function") {
                 await plugin.run(sock, msg);
@@ -32,7 +22,7 @@ async function messageHandler(sock, message) {
 
         } catch (err) {
 
-            console.error(`Plugin Error (${file}):`, err);
+            console.error(`Plugin Error: ${plugin.name}`, err);
 
         }
 
