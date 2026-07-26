@@ -1,49 +1,68 @@
-// =====================================
-// NIMR BOT
-// Developer: TOPFEROS TECH
-// =====================================
+/**
+ * ==========================================
+ * TOPFEROS MD
+ * Developer: TOPFEROS TECH
+ * ==========================================
+ */
 
-require("./config");
+require("dotenv").config();
 
-const {
-  default: makeWASocket,
-  useMultiFileAuthState,
-  DisconnectReason,
-  fetchLatestBaileysVersion
-} = require("@whiskeysockets/baileys");
+const express = require("express");
+const path = require("path");
 
-const pino = require("pino");
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-async function startNimrBot() {
-  const { state, saveCreds } = await useMultiFileAuthState("./session");
-  const { version } = await fetchLatestBaileysVersion();
+// EJS
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "dashboard/views"));
 
-  const sock = makeWASocket({
-    version,
-    auth: state,
-    logger: pino({ level: "silent" }),
-    printQRInTerminal: true
-  });
+// Static Files
+app.use(express.static(path.join(__dirname, "dashboard/public")));
 
-  sock.ev.on("creds.update", saveCreds);
+// Home
+app.get("/", (req, res) => {
+    res.redirect("/login");
+});
 
-  sock.ev.on("connection.update", ({ connection, lastDisconnect }) => {
-    if (connection === "open") {
-      console.log(`✅ ${global.BOT_NAME} Connected Successfully!`);
-    }
+// Login Page
+app.get("/login", (req, res) => {
+    res.render("login", {
+        botName: "TOPFEROS MD",
+        version: "1.0.0"
+    });
+});
 
-    if (connection === "close") {
-      const shouldReconnect =
-        lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
+// Dashboard
+app.get("/dashboard", (req, res) => {
+    res.render("dashboard", {
+        botName: "TOPFEROS MD"
+    });
+});
 
-      if (shouldReconnect) {
-        console.log("🔄 Reconnecting...");
-        startNimrBot();
-      } else {
-        console.log("❌ Logged Out.");
-      }
-    }
-  });
-}
+// Settings
+app.get("/settings", (req, res) => {
+    res.render("settings");
+});
 
-startNimrBot();
+// Plugins
+app.get("/plugins", (req, res) => {
+    res.render("plugins");
+});
+
+// Users
+app.get("/users", (req, res) => {
+    res.render("users");
+});
+
+// Pair Code
+app.get("/pair", (req, res) => {
+    res.render("pair");
+});
+
+app.listen(PORT, () => {
+    console.log("==================================");
+    console.log("🤖 TOPFEROS MD Started");
+    console.log(`🌐 Dashboard: http://localhost:${PORT}`);
+    console.log("==================================");
+});
