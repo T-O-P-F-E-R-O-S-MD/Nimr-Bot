@@ -5,7 +5,7 @@
 
 global.BOT_NAME = "Nimr Bot";
 global.OWNER_NAME = "TOPFEROS TECH";
-global.OWNER_NUMBER = "509XXXXXXXX"; // Ranplase ak nimewo WhatsApp ou
+global.OWNER_NUMBER = "50934640464";
 
 // Welcome Banner
 global.WELCOME_IMAGE = "https://drive.google.com/uc?export=download&id=12f6XuXaVykA-OkR9ddTo5qxViUuwXcFI";
