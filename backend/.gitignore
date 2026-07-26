@@ -1,0 +1,47 @@
+# ======================================
+# TOPFEROS MD
+# ======================================
+
+# Node Modules
+node_modules/
+
+# Environment
+.env
+
+# Sessions
+session/
+sessions/
+auth_info/
+creds.json
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Temp Files
+temp/
+tmp/
+.cache/
+
+# Database
+database/*.db
+database/*.sqlite
+database/*.json
+
+# Build
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Package Locks
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
