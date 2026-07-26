@@ -7,6 +7,7 @@
 
 const { getPlugins } = require("../utils/pluginLoader");
 const config = require("../config/config");
+const { saveMessage } = require("../utils/messageStore");
 
 const emojis = [
     "❤️",
@@ -38,6 +39,20 @@ async function messageHandler(sock, message) {
         if (!msg.key?.remoteJid) return;
 
         // ===================================
+        // Save Message (Anti Delete)
+        // ===================================
+
+        try {
+
+            saveMessage(msg);
+
+        } catch (err) {
+
+            console.error("❌ Save Message:", err.message);
+
+        }
+
+        // ===================================
         // Ignore Status (Optional)
         // ===================================
 
@@ -58,93 +73,4 @@ async function messageHandler(sock, message) {
 
                 await sock.readMessages([msg.key]);
 
-            } catch (err) {
-
-                console.error("❌ Auto Read:", err.message);
-
-            }
-
-        }
-
-        // ===================================
-        // Auto React
-        // ===================================
-
-        if (config.FEATURES.AUTO_REACT) {
-
-            try {
-
-                const emoji =
-                    emojis[Math.floor(Math.random() * emojis.length)];
-
-                await sock.sendMessage(
-                    msg.key.remoteJid,
-                    {
-                        react: {
-                            text: emoji,
-                            key: msg.key
-                        }
-                    }
-                );
-
-            } catch (err) {
-
-                console.error("❌ Auto React:", err.message);
-
-            }
-
-        }
-
-        // ===================================
-        // Auto View Once (Coming Soon)
-        // ===================================
-
-        const quoted =
-            msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-
-        if (
-            quoted?.viewOnceMessage ||
-            quoted?.viewOnceMessageV2 ||
-            quoted?.viewOnceMessageV2Extension
-        ) {
-
-            // Auto View Once Logic
-
-        }
-
-        // ===================================
-        // Execute Commands
-        // ===================================
-
-        const plugins = getPlugins();
-
-        for (const plugin of plugins) {
-
-            try {
-
-                if (typeof plugin.execute === "function") {
-
-                    await plugin.execute(sock, msg);
-
-                }
-
-            } catch (err) {
-
-                console.error(
-                    `❌ ${plugin.name || "Unknown Plugin"} Error:`,
-                    err.message
-                );
-
-            }
-
-        }
-
-    } catch (err) {
-
-        console.error("❌ Message Handler Error:", err);
-
-    }
-
-}
-
-module.exports = messageHandler;
+            } catch (err)
