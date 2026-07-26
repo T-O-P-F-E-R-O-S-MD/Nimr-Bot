@@ -8,6 +8,10 @@ const {
     getQR
 } = require("../connection/connect");
 
+const {
+    generatePairCode
+} = require("../controllers/pairController");
+
 // Home API
 router.get("/", (req, res) => {
 
@@ -83,17 +87,7 @@ router.get("/qr", async (req, res) => {
 
 });
 
-// Pair Code (Coming Soon)
-router.get("/pair", async (req, res) => {
-
-    res.json({
-
-        success: false,
-
-        message: "Pair Code module is under development."
-
-    });
-
-});
+// Pair Code
+router.post("/pair", generatePairCode);
 
 module.exports = router;
